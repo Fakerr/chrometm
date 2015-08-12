@@ -20,7 +20,7 @@ function getCurrentTabsUrl(callback) {
     var urls = [];
     for(var i=0; i < tabs.length; i++){
       urls[i] = tabs[i].url;
-    };
+    }
     // A tab is a plain object that provides information about the tab.
     // See https://developer.chrome.com/extensions/tabs#type-Tab
     //var url = tab1.url;
@@ -86,13 +86,56 @@ function getImageUrl(searchTerm, callback, errorCallback) {
   x.send();
 }
 
-function renderStatus(statusText) {
-  document.getElementById('tabs').textContent = statusText;
+function refresh(){
+  var myNode = document.getElementById("status");
+     while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+    }
+  chrome.storage.sync.get(null, function (result) {
+    var userKeyIds = result.userKeyIds;
+    userKeyIds.forEach(function(element, index, array){
+      renderStatus(element.id, index);
+    });
+  });
+}
+
+
+function renderStatus(urls, index) {
+    var del = document.createElement("BUTTON");
+    var b = document.createTextNode("Delete");
+    del.appendChild(b);
+    del.id = index;
+    var link = document.createElement('a');
+    var t = document.createTextNode("\n(" + urls.length + ") tabs    ");
+    link.appendChild(t);
+    link.href = "#";
+    document.getElementById("status").appendChild(link);
+    document.getElementById("status").appendChild(del);
+    document.getElementById(index).addEventListener('click', function(index){
+      chrome.storage.sync.get(null, function (result) {
+        var userKeyIds = result.userKeyIds;
+        userKeyIds.splice(index, 1);
+        chrome.storage.sync.set({userKeyIds: userKeyIds}, function () {   
+            refresh(); 
+       });
+      });
+    });
+}
+
+function Add(){
+  getCurrentTabsUrl(function(urls) {
+    renderStatus(urls);
+    chrome.storage.sync.get({userKeyIds: []}, function (result) {
+    var userKeyIds = result.userKeyIds;
+    userKeyIds.push({id: urls, HasBeenUploadedYet: false});
+    chrome.storage.sync.set({userKeyIds: userKeyIds}, function () {
+        refresh();
+    });
+  });
+ });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  getCurrentTabsUrl(function(urls) {
-    // Put the image URL in Google search.
-    renderStatus("(" + urls.length + ")  tabs.");
-  });
+  document.getElementById('add').addEventListener('click', Add);
+  refresh();
 });
