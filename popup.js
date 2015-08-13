@@ -109,15 +109,25 @@ function renderStatus(urls, index) {
     var t = document.createTextNode("\n(" + urls.length + ") tabs    ");
     link.appendChild(t);
     link.href = "#";
+    link.id = index + 100;
     document.getElementById("status").appendChild(link);
     document.getElementById("status").appendChild(del);
-    document.getElementById(index).addEventListener('click', function(index){
+    document.getElementById(index).addEventListener('click', function(){
       chrome.storage.sync.get(null, function (result) {
         var userKeyIds = result.userKeyIds;
         userKeyIds.splice(index, 1);
         chrome.storage.sync.set({userKeyIds: userKeyIds}, function () {   
             refresh(); 
        });
+      });
+    });
+    document.getElementById(index + 100).addEventListener('click', function(){
+      chrome.storage.sync.get(null, function (result) {
+        var userKeyIds = result.userKeyIds;
+        var tabs = userKeyIds[index].id;
+        chrome.windows.create({
+            url: tabs
+        });
       });
     });
 }
