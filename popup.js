@@ -23,10 +23,6 @@ function getCurrentTabsUrl(callback) {
     }
     // A tab is a plain object that provides information about the tab.
     // See https://developer.chrome.com/extensions/tabs#type-Tab
-    //var url = tab1.url;
-    //var url2 = tab2.url;
-    // alert(url)
-    // alert(url2)
     // tab.url is only available if the "activeTab" permission is declared.
     // If you want to see the URL of other tabs (e.g. after removing active:true
     // from |queryInfo|), then the "tabs" permission is required to see their
