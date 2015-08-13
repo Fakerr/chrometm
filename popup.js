@@ -109,13 +109,16 @@ function renderStatus(urls, index) {
     document.getElementById("status").appendChild(link);
     document.getElementById("status").appendChild(del);
     document.getElementById(index).addEventListener('click', function(){
-      chrome.storage.sync.get(null, function (result) {
+      var r = confirm("Are you sure ?");
+      if(r == true){
+        chrome.storage.sync.get(null, function (result) {
         var userKeyIds = result.userKeyIds;
         userKeyIds.splice(index, 1);
         chrome.storage.sync.set({userKeyIds: userKeyIds}, function () {   
             refresh(); 
        });
       });
+      }
     });
     document.getElementById(index + 100).addEventListener('click', function(){
       chrome.storage.sync.get(null, function (result) {
